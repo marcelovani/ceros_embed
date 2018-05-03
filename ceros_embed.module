@@ -64,6 +64,7 @@ function ceros_embed_field_formatter_info() {
       ),
       'settings' => array(
         'replace_node_content' => 0,
+        'hide_page_title' => 0,
       ),
     ),
   );
@@ -102,8 +103,13 @@ function ceros_embed_field_formatter_settings_form($field, $instance, $view_mode
       $element['replace_node_content'] = array(
         '#type' => 'checkbox',
         '#title' => t('Replace node content'),
-        '#description' => t('Replaces other fields on the display.'),
         '#default_value' => $settings['replace_node_content'],
+        '#multiple' => FALSE,
+      );
+      $element['hide_page_title'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Hide page title'),
+        '#default_value' => $settings['hide_page_title'],
         '#multiple' => FALSE,
       );
       break;
@@ -121,7 +127,9 @@ function ceros_embed_field_formatter_settings_summary($field, $instance, $view_m
 
   switch ($instance['widget']['type']) {
     case 'ceros_embed':
-      $summary = !empty($settings['replace_node_content']) ?  'Replace node content' : 'Default';
+      $summary_lines[] = !empty($settings['replace_node_content']) ?  'Replace node content' : 'Display inline';
+      $summary_lines[] = !empty($settings['hide_page_title']) ?  'Hide page title' : 'Show page title';
+      $summary = implode('<br />', $summary_lines);
       break;
   }
 
@@ -172,9 +180,35 @@ function ceros_embed_field_formatter_view($entity_type, $entity, $field, $instan
 }
 
 /**
+ * Implements hook_preprocess_page().
+ */
+function ceros_embed_process_page(&$variables) {
+  if (!$field = ceros_embed_get_page_node_field($variables['page'])) {
+    return;
+  }
+  if (isset($field['settings']['hide_page_title']) && $field['settings']['hide_page_title'] === 1) {
+    $variables['title'] = '';
+  }
+}
+
+/**
  * Implements hook_page_alter().
  */
 function ceros_embed_page_alter(&$page) {
+  if (!$field = ceros_embed_get_page_node_field($page)) {
+    return;
+  }
+  if (isset($field['settings']['replace_node_content']) && $field['settings']['replace_node_content'] === 1) {
+    $page['content']['ceros_embed'] = $field;
+    // Hide element, rather than remove so that it is still available in hook_preprocess_page().
+    hide($page['content']['system_main']['nodes'][menu_get_object()->nid]);
+  }
+}
+
+/**
+ * Get the Ceros settings from the current menu node..
+ */
+function ceros_embed_get_page_node_field($page) {
   if (!$node = menu_get_object()) {
     return;
   }
@@ -184,10 +218,7 @@ function ceros_embed_page_alter(&$page) {
   $node_content = $page['content']['system_main']['nodes'][$node->nid];
   foreach ($node_content as $field_name => $field) {
     if (is_array($field) && isset($field['#field_type']) && $field['#field_type'] == 'ceros_embed') {
-      if (isset($field['settings']['replace_node_content']) && $field['settings']['replace_node_content'] === 1) {
-        $page['content']['ceros_embed'] = $field;
-        unset($page['content']['system_main']['nodes'][$node->nid]);
-      }
+      return $field;
     }
   }
 }
