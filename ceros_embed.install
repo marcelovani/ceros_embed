@@ -1,0 +1,17 @@
+<?php
+/**
+ * Implements hook_field_schema().
+ */
+function ceros_embed_field_schema($field) {
+  if ($field['type'] == 'ceros_embed') {
+    return array(
+      'columns' => array(
+        'value' => array(
+          'type' => 'text',
+          'size' => 'big',
+          'not null' => FALSE,
+        ),
+      ),
+    );
+  }
+}

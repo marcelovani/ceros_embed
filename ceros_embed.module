@@ -10,3 +10,92 @@ function ceros_embed_help($path, $arg) {
       return $output;
   }
 }
+
+/**
+ * Implements hook_field_info().
+ */
+function ceros_embed_field_info() {
+  return array(
+    'ceros_embed' => array(
+      'label' => t('Ceros Embed'),
+      'description' => t('Allows Ceros to be embedded on nodes.'),
+      'settings' => array(
+        'max_length' => '',
+      ),
+      'instance_settings' => array(
+        'text_processing' => 0,
+      ),
+      'default_widget' => 'ceros_embed',
+      'default_formatter' => 'ceros_embed',
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function ceros_embed_field_widget_info() {
+  return array(
+    'ceros_embed' => array(
+      'label' => t('Ceros Embed'),
+      'field types' => array(
+        'ceros_embed',
+      ),
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'behaviors' => array(
+        'multiple values' => FIELD_BEHAVIOR_DEFAULT,
+        'default value' => FIELD_BEHAVIOR_DEFAULT,
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function ceros_embed_field_formatter_info() {
+  return array(
+    'ceros_embed' => array(
+      'label' => t('Ceros Embed'),
+      'field types' => array(
+        'ceros_embed',
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_widget_form().
+ */
+function ceros_embed_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  switch ($instance['widget']['type']) {
+    case 'ceros_embed':
+      $element['value'] = array(
+        '#type' => 'textarea',
+        '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : '',
+        '#delta' => $delta,
+      );
+      break;
+  }
+  return $element;
+}
+
+/**
+ * Implements hook_field_is_empty().
+ */
+function ceros_embed_field_is_empty($item, $field) {
+  return empty($item['value']);
+}
+
+/**
+ * Implements hook_field_validate().
+ */
+function ceros_embed_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
+  foreach ($items as $delta => $item) {
+    if (!empty($item['value'])) {
+      // @todo Validate.
+    }
+  }
+}
