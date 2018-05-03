@@ -180,7 +180,7 @@ function ceros_embed_field_formatter_view($entity_type, $entity, $field, $instan
 }
 
 /**
- * Implements hook_preprocess_page().
+ * Implements hook_process_page().
  */
 function ceros_embed_process_page(&$variables) {
   if (!$field = ceros_embed_get_page_node_field($variables['page'])) {
@@ -200,7 +200,7 @@ function ceros_embed_page_alter(&$page) {
   }
   if (isset($field['settings']['replace_node_content']) && $field['settings']['replace_node_content'] === 1) {
     $page['content']['ceros_embed'] = $field;
-    // Hide element, rather than remove so that it is still available in hook_preprocess_page().
+    // Hide element, rather than remove so that it is still available in hook_process_page().
     hide($page['content']['system_main']['nodes'][menu_get_object()->nid]);
   }
 }
