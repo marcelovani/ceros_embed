@@ -101,3 +101,29 @@ function ceros_embed_ceros_embed_field_validate($element, &$form_state) {
     form_set_value($element, $value, $form_state);
   }
 }
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function ceros_embed_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  switch ($display['type']) {
+    case 'ceros_embed':
+      $element['#attached']['js'] = array(
+        '//view.ceros.com/scroll-proxy.min.js' => array(
+          'type' => 'external',
+          'scope' => 'footer',
+          'attributes' => array(
+            'async' => 'async',
+          ),
+        ),
+      );
+      foreach ($items as $delta => $item) {
+        $element[$delta] = array(
+          '#markup' => $item['value'],
+        );
+      }
+      break;
+  }
+  return $element;
+}
