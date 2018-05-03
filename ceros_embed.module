@@ -62,6 +62,9 @@ function ceros_embed_field_formatter_info() {
       'field types' => array(
         'ceros_embed',
       ),
+      'settings' => array(
+        'replace_node_content' => 0,
+      ),
     ),
   );
 }
@@ -86,6 +89,46 @@ function ceros_embed_field_widget_form(&$form, &$form_state, $field, $instance, 
 }
 
 /**
+ * Implements hook_field_formatter_settings_form().
+ */
+function ceros_embed_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  $element = array();
+
+  switch ($instance['widget']['type']) {
+    case 'ceros_embed':
+      $element['replace_node_content'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Replace node content'),
+        '#description' => t('Replaces other fields on the display.'),
+        '#default_value' => $settings['replace_node_content'],
+        '#multiple' => FALSE,
+      );
+      break;
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function ceros_embed_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  switch ($instance['widget']['type']) {
+    case 'ceros_embed':
+      $summary = !empty($settings['replace_node_content']) ?  'Replace node content' : 'Default';
+      break;
+  }
+
+  return $summary;
+}
+
+/**
  * Implements hook_field_is_empty().
  */
 function ceros_embed_field_is_empty($item, $field) {
@@ -106,7 +149,7 @@ function ceros_embed_ceros_embed_field_validate($element, &$form_state) {
  * Implements hook_field_formatter_view().
  */
 function ceros_embed_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-  $element = array();
+  $element = array('settings' => $display['settings']);
   switch ($display['type']) {
     case 'ceros_embed':
       $element['#attached']['js'] = array(
@@ -126,4 +169,25 @@ function ceros_embed_field_formatter_view($entity_type, $entity, $field, $instan
       break;
   }
   return $element;
+}
+
+/**
+ * Implements hook_page_alter().
+ */
+function ceros_embed_page_alter(&$page) {
+  if (!$node = menu_get_object()) {
+    return;
+  }
+  if (!isset($page['content']['system_main']['nodes'][$node->nid])) {
+    return;
+  }
+  $node_content = $page['content']['system_main']['nodes'][$node->nid];
+  foreach ($node_content as $field_name => $field) {
+    if (is_array($field) && isset($field['#field_type']) && $field['#field_type'] == 'ceros_embed') {
+      if (isset($field['settings']['replace_node_content']) && $field['settings']['replace_node_content'] === 1) {
+        $page['content']['ceros_embed'] = $field;
+        unset($page['content']['system_main']['nodes'][$node->nid]);
+      }
+    }
+  }
 }
