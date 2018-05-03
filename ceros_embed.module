@@ -1,0 +1,12 @@
+<?php
+
+/**
+ * Implements hook_help().
+ */
+function ceros_embed_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#ceros_embed':
+      $output = '<p>' . t('The Ceros Embed module allows Ceros to be embedded on nodes.') . '</p>';
+      return $output;
+  }
+}
