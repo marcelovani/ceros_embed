@@ -227,7 +227,7 @@ function ceros_embed_get_page_node_field($page) {
   }
   $node_content = $page['content']['system_main']['nodes'][$node->nid];
   foreach ($node_content as $field_name => $field) {
-    if (is_array($field) && isset($field['#field_type']) && $field['#field_type'] == 'ceros_embed') {
+    if (is_array($field) && isset($field['#field_type']) && $field['#field_type'] == 'ceros_embed' && !empty($field['#items'])) {
       return $field;
     }
   }
