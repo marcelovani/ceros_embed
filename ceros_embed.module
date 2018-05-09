@@ -173,7 +173,8 @@ function ceros_embed_field_formatter_view($entity_type, $entity, $field, $instan
     return array();
   }
 
-  // Include display settings in element array so that we can refer to them in alter hooks to hide page elements.
+  // Include display settings in element array so that we can refer to them in
+  // alter hooks to hide page elements.
   $element = array('settings' => $display['settings']);
 
   switch ($display['type']) {
@@ -223,11 +224,13 @@ function ceros_embed_page_alter(&$page) {
   if (isset($field['settings']['replace_node_content']) && $field['settings']['replace_node_content'] === 1) {
     $page['content']['ceros_embed'] = $field;
 
-    // Set weight to 0 and sort so that it appears in the same position as the main node.
+    // Set weight to 0 and sort so that it appears in the same position
+    // as the main node.
     $page['content']['ceros_embed']['#weight'] = 0;
     uasort($page['content'], 'drupal_sort_weight');
 
-    // Hide element, rather than remove so that it is still available in hook_process_page().
+    // Hide element, rather than remove so that it is still available
+    // in hook_process_page().
     hide($page['content']['system_main']['nodes'][menu_get_object()->nid]);
   }
 }
@@ -255,7 +258,7 @@ function ceros_embed_get_page_node_field($page) {
  *
  * @param string $text
  *   The text to sanitize.
- * @param stdClass $filter
+ * @param object $filter
  *   The filter being used to sanitize.
  *
  * @return string
@@ -323,16 +326,17 @@ function _ceros_embed_allowed_tags_to_array($allowed_html) {
  *   The form.
  * @param array $form_state
  *   The form state.
- * @param stdClass $filter
+ * @param object $filter
  *   The filter object.
- * @param stdClass $format
+ * @param object $format
  *   The format object.
  * @param array $defaults
  *   The default filter settings.
  *
  * @return array
+ *   Array of filter setting fields.
  */
-function _ceros_embed_sanitize_markup_settings($form, &$form_state, $filter, $format, $defaults) {
+function _ceros_embed_sanitize_markup_settings(array $form, array &$form_state, $filter, $format, array $defaults) {
   $filter->settings += $defaults;
   $settings['allowed_html'] = array(
     '#type' => 'textfield',
@@ -348,8 +352,9 @@ function _ceros_embed_sanitize_markup_settings($form, &$form_state, $filter, $fo
  * Implements hook_filter_info().
  */
 function ceros_embed_filter_info() {
-  // We cannot use the 'filter_html' filter as this calls filter_xss(), which strips style attributes.
-  // 'style' attributes are required for Ceros embed to work correctly.
+  // We cannot use the 'filter_html' filter as this calls filter_xss(), which
+  // strips style attributes. 'style' attributes are required for Ceros embed
+  // to work correctly.
   $filters['ceros_embed_sanitize_markup'] = array(
     'title' => t('Ceros Embed: Sanitize Markup'),
     'process callback' => '_ceros_embed_sanitize_markup',
