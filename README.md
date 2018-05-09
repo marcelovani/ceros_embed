@@ -1,6 +1,6 @@
 # Ceros Embed
 
-The [Ceros](https://www.ceros.com/) Embed Module allows Ceros to the embedded on nodes.
+The [Ceros](https://www.ceros.com/) Embed Module allows Ceros to be embedded on nodes.
 
 ## Installation
 
@@ -11,8 +11,11 @@ for further information.
 ## Configuration
 
 ### Field
-* Add a Ceros Embed field to a content type
-* Configure the field display on the node display settings
+The module provides a Ceros Embed field type that allows embed snippets to be added to nodes.
+
+The field display can be configured to:
+* Replace the node content on the same display
+* Hide the page title
 
 ### Filter Format
 * A Ceros Embed filter format is provided and can be configured at `admin/config/content/formats/ceros_embed`
