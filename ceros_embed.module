@@ -290,10 +290,11 @@ function _ceros_embed_allowed_tags_to_array($allowed_html) {
   $tags = explode(',', $allowed_html);
   foreach ($tags as $tag) {
     preg_match_all('~(.*?)\[(.*?)\]~', $tag, $matches);
-    $tag_name = $matches[1][0] ?: $tag;
-    $attributes = explode('|', $matches[2][0]) ?: array();
+    $tag_name = !empty($matches[1][0]) ? $matches[1][0] : $tag;
+    $attributes = !empty($matches[2][0]) ? explode('|', $matches[2][0]) : array();
     $allowed_html_array[$tag_name] = $attributes;
   }
+
   return $allowed_html_array;
 }
 
