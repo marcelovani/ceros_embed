@@ -290,8 +290,16 @@ function _ceros_embed_allowed_tags_to_array($allowed_html) {
   $tags = explode(',', $allowed_html);
   foreach ($tags as $tag) {
     preg_match_all('~(.*?)\[(.*?)\]~', $tag, $matches);
+
+    // Tag name is the first part of the match.
+    // Fall back on the entire tag in case no attributes were specified.
     $tag_name = !empty($matches[1][0]) ? $matches[1][0] : $tag;
+    $tag_name = trim($tag_name);
+
+    // Attributes are the second match, separated by pipes.
     $attributes = !empty($matches[2][0]) ? explode('|', $matches[2][0]) : array();
+    $attributes = array_map('trim', $attributes);
+
     $allowed_html_array[$tag_name] = $attributes;
   }
 
@@ -324,6 +332,8 @@ function _ceros_embed_sanitize_markup_settings($form, &$form_state, $filter, $fo
  * Implements hook_filter_info().
  */
 function ceros_embed_filter_info() {
+  // We cannot use the 'filter_html' filter as this calls filter_xss(), which strips style attributes.
+  // 'style' attributes are required for Ceros embed to work correctly.
   $filters['ceros_embed_sanitize_markup'] = array(
     'title' => t('Ceros Embed: Sanitize Markup'),
     'process callback' => '_ceros_embed_sanitize_markup',
