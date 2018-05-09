@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * @file
+ * Installation functions for the ceros_embed module.
+ */
+
 /**
  * Implements hook_install().
  */

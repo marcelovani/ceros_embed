@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Main module functions for the ceros_embed module.
+ */
+
+/**
  * Implements hook_help().
  */
 function ceros_embed_help($path, $arg) {
@@ -86,7 +91,7 @@ function ceros_embed_field_widget_form(&$form, &$form_state, $field, $instance, 
         '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : '',
         '#delta' => $delta,
         '#element_validate' => array(
-          'ceros_embed_ceros_embed_field_validate'
+          'ceros_embed_ceros_embed_field_validate',
         ),
       );
       break;
@@ -132,8 +137,8 @@ function ceros_embed_field_formatter_settings_summary($field, $instance, $view_m
 
   switch ($instance['widget']['type']) {
     case 'ceros_embed':
-      $summary_lines[] = !empty($settings['replace_node_content']) ?  'Replace node content' : 'Display inline';
-      $summary_lines[] = !empty($settings['hide_page_title']) ?  'Hide page title' : 'Show page title';
+      $summary_lines[] = !empty($settings['replace_node_content']) ? 'Replace node content' : 'Display inline';
+      $summary_lines[] = !empty($settings['hide_page_title']) ? 'Hide page title' : 'Show page title';
       $summary = implode('<br />', $summary_lines);
       break;
   }
@@ -238,7 +243,7 @@ function ceros_embed_get_page_node_field($page) {
     return;
   }
   $node_content = $page['content']['system_main']['nodes'][$node->nid];
-  foreach ($node_content as $field_name => $field) {
+  foreach ($node_content as $field) {
     if (is_array($field) && isset($field['#field_type']) && $field['#field_type'] == 'ceros_embed') {
       return $field;
     }
@@ -248,15 +253,19 @@ function ceros_embed_get_page_node_field($page) {
 /**
  * Sanitize Ceros embed snippet.
  *
- * @param $text
- * @param $filter
+ * @param string $text
+ *   The text to sanitize.
+ * @param stdClass $filter
+ *   The filter being used to sanitize.
+ *
  * @return string
+ *   The sanitized text.
  */
 function _ceros_embed_sanitize_markup($text, $filter) {
   $allowed_html = _ceros_embed_allowed_tags_to_array($filter->settings['allowed_html']);
 
   // Remove line breaks as these get html encoded.
-  $text = preg_replace( "/\r|\n/", "", $text);
+  $text = preg_replace("/\r|\n/", "", $text);
 
   // Strip disallowed tags.
   $text = strip_tags($text, '<' . implode('><', array_keys($allowed_html)) . '>');
@@ -283,7 +292,8 @@ function _ceros_embed_sanitize_markup($text, $filter) {
 /**
  * Return array of allowed tags and attributes.
  *
- * @return array()
+ * @return array
+ *   Nested array of tags and their allowed attributes.
  */
 function _ceros_embed_allowed_tags_to_array($allowed_html) {
   $allowed_html_array = array();
@@ -309,11 +319,17 @@ function _ceros_embed_allowed_tags_to_array($allowed_html) {
 /**
  * Format settings callback.
  *
- * @param $form
- * @param $form_state
- * @param $filter
- * @param $format
- * @param $defaults
+ * @param array $form
+ *   The form.
+ * @param array $form_state
+ *   The form state.
+ * @param stdClass $filter
+ *   The filter object.
+ * @param stdClass $format
+ *   The format object.
+ * @param array $defaults
+ *   The default filter settings.
+ *
  * @return array
  */
 function _ceros_embed_sanitize_markup_settings($form, &$form_state, $filter, $format, $defaults) {
