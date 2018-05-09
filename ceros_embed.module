@@ -137,8 +137,8 @@ function ceros_embed_field_formatter_settings_summary($field, $instance, $view_m
 
   switch ($instance['widget']['type']) {
     case 'ceros_embed':
-      $summary_lines[] = !empty($settings['replace_node_content']) ? 'Replace node content' : 'Display inline';
-      $summary_lines[] = !empty($settings['hide_page_title']) ? 'Hide page title' : 'Show page title';
+      $summary_lines[] = !empty($settings['replace_node_content']) ? t('Replace node content') : t('Display inline');
+      $summary_lines[] = !empty($settings['hide_page_title']) ? t('Hide page title') : t('Show page title');
       $summary = implode('<br />', $summary_lines);
       break;
   }
