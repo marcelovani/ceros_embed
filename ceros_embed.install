@@ -1,5 +1,26 @@
 <?php
 /**
+ * Implements hook_install().
+ */
+function ceros_embed_install() {
+  $format = array(
+    'format' => 'ceros_embed',
+    'name' => 'Ceros Embed',
+    'weight' => 0,
+    'filters' => array(
+      'ceros_embed_sanitize_markup' => array(
+        'weight' => 0,
+        'status' => 1,
+        'settings' => array(
+          'allowed_html' => 'div[style|id],iframe[allowfullscreen|src|style|frameborder|class|scrolling]',
+        ),
+      ),
+    ),
+  );
+  filter_format_save((object) $format);
+}
+
+/**
  * Implements hook_field_schema().
  */
 function ceros_embed_field_schema($field) {
