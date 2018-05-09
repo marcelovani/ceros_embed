@@ -23,6 +23,8 @@ function ceros_embed_install() {
       ),
     ),
   );
+  drupal_static_reset('filter_get_filters');
+  module_implements('filter_info', FALSE, TRUE);
   filter_format_save((object) $format);
 }
 
