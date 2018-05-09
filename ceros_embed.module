@@ -258,7 +258,7 @@ function _ceros_embed_sanitize_markup($text, $filter) {
   // Remove line breaks as these get html encoded.
   $text = preg_replace( "/\r|\n/", "", $text);
 
-  // String disallowed tags.
+  // Strip disallowed tags.
   $text = strip_tags($text, '<' . implode('><', array_keys($allowed_html)) . '>');
 
   // Trim any leading/trailing whitespace.
